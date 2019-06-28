@@ -9,5 +9,6 @@ namespace PN.WebAPI.Manager
     public interface IUserManager
     {
       User Authenticate(string username, string password);
+      List<User> GetLogonUsers();
    }
 }

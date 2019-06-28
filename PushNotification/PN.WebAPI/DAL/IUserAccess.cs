@@ -9,5 +9,7 @@ namespace PN.WebAPI.DAL
    public interface IUserAccess
    {
       User GetUser(string username, string password);
+      List<User> GetAllUsers();
+      void UpdateUser(User user);
    }
 }

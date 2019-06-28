@@ -25,5 +25,15 @@ namespace PN.WebAPI.Controllers
             return NotFound("Username or password is incorrect");
          return Ok(user);
       }
-    }
+
+      [HttpPost("GetLogonUsers")]
+      public IActionResult GetLogonUsers()
+      {
+         var users = _userManager.GetLogonUsers();
+         if (users == null)
+            return NotFound("There is no logon user.");
+         else
+            return Ok(users);
+      }
+   }
 }

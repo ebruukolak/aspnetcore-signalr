@@ -10,7 +10,7 @@ namespace PN.WebAPI.DAL
    public class EFContext : DbContext
    {
       protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-                               => optionsBuilder.UseNpgsql(@"Host=localhost;Port=5432;Username=postgres;Password=**;Database=***;Pooling=true;");
+                               => optionsBuilder.UseNpgsql(@"Host=localhost;Port=5432;Username=postgres;Password=123456;Database=Pcis;Pooling=true;");
 
       public DbSet<User> users { get; set; }
    }

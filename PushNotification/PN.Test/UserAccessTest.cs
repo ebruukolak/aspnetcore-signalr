@@ -12,12 +12,29 @@ namespace PN.Test
       {
          _userAccess = userAccess;
       }
-      
+
       [Fact]
       public void should_get_user()
       {
          User user = _userAccess.GetUser("ebru", "12345");
          Assert.NotNull(user);
+      }
+      [Fact]
+      public void should_get_all_users()
+      {
+         var users = _userAccess.GetAllUsers();
+         Assert.NotNull(users);
+      }
+      [Fact]
+      public void should_update_user()
+      {
+         var user = new User
+         {
+            username = "ebru",
+            password = "123",
+            lastlogindate = DateTime.Now
+         };
+         _userAccess.UpdateUser(user);
       }
    }
 }

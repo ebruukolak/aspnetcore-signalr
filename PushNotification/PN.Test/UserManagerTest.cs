@@ -21,5 +21,11 @@ namespace PN.Test
          User user = _userManager.Authenticate("ebru", "12345");
          Assert.NotNull(user);
       }
+      [Fact]
+      public void should_get_logon_users()
+      {
+         var users = _userManager.GetLogonUsers();
+         Assert.NotNull(users);
+      }
    }
 }

@@ -14,7 +14,6 @@ namespace PN.Client.Controllers
 {
    public class AccountController : Controller
    {
-
       [AllowAnonymous]
       public ActionResult Logon()
       {
@@ -29,15 +28,20 @@ namespace PN.Client.Controllers
             var userData = JsonConvert.SerializeObject(user);
             HttpContent content = new StringContent(userData, null, "application/json");
 
-           
-
             await client.PostAsync("http://localhost:2321/api/account/Logon", content);
 
             return RedirectToAction("Index");
          }
-
+      }    
+      public async Task<IActionResult> LogonUsers()
+      {
+         using (HttpClient client = new HttpClient())
+         {
+           var userData= await client.PostAsync("http://localhost:2321/api/account/GetLogonUsers",null);
+            var users = JsonConvert.DeserializeObject<IEnumerable<User>>(userData.Content.ReadAsStringAsync().Result);
+            return View(users);
+         }
       }
-
       public IActionResult Index()
       {
          return View();
