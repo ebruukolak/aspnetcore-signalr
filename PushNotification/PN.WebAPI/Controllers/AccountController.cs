@@ -18,7 +18,7 @@ namespace PN.WebAPI.Controllers
       }
 
       [HttpPost("Logon")]
-      public IActionResult Logon(User u)
+      public IActionResult Logon([FromBody] User u)
       {
          var user = _userManager.Authenticate(u.username , u.password);
          if (user == null)
