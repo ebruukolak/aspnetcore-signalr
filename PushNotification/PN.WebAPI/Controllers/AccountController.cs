@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PN.WebAPI.Entities;
-using PN.WebAPI.Hubs;
 using PN.WebAPI.Manager;
 
 namespace PN.WebAPI.Controllers
@@ -22,12 +22,10 @@ namespace PN.WebAPI.Controllers
       }
 
       [HttpPost("Logon")]
-      public IActionResult Logon([FromBody] User u)
+      public User Logon([FromBody] User u)
       {
          var user = _userManager.Authenticate(u.username, u.password);
-         if (user == null)
-            return NotFound("Username or password is incorrect");
-         return Ok(user);
+         return user;
       }
 
       [HttpPost("GetLogonUsers")]
@@ -40,6 +38,60 @@ namespace PN.WebAPI.Controllers
             return Ok(users);
       }
 
+      [HttpPost("AddActiveUser")]
+      public IActionResult AddActiveUser([FromBody] ActiveUser activeUser)
+      {
+         if (ModelState.IsValid)
+         {
+            _userManager.AddActiveUser(activeUser);
+            return Ok(HttpStatusCode.Created);
+         }
+         else
+            return Ok(HttpStatusCode.BadRequest);
+      }
+
+      [HttpPost("UpdateActiveUser")]
+      public IActionResult UpdateActiveUser([FromBody] ActiveUser activeUser)
+      {
+         if (ModelState.IsValid)
+         {
+            _userManager.UpdateActiveUser(activeUser);
+            return Ok(HttpStatusCode.Created);
+         }
+         else
+            return Ok(HttpStatusCode.BadRequest);
+      }
+
+     // [HttpGet("GetBySessionId")]
+      //public ActiveUser GetBySessionId(string sessionid)
+      //{
+      //   var activeUser = _userManager.GetBySessionId(sessionid);
+      //   if (activeUser == null)
+      //      return null;
+      //   else
+      //      return activeUser;
+      //}
+
+      [HttpPost("ModifiedActiveUser")]
+      public IActionResult ModifiedActiveUser([FromBody] ActiveUser activeUser)
+      {
+         if (activeUser != null)
+         {
+            activeUser.lastlogindate = DateTime.Now;
+           if(_userManager.GetActiveUser(activeUser.sessionid) != null)
+            {
+               _userManager.UpdateActiveUser(activeUser);
+               return Ok(HttpStatusCode.Accepted);
+            }
+            else
+            {
+               _userManager.AddActiveUser(activeUser);
+               return Ok(HttpStatusCode.Created);
+            }
+         }
+         return Ok(HttpStatusCode.NotFound);
+      }
+
       [HttpPost("SendMessage")]
       public IActionResult SendMessage()
       {
@@ -48,5 +100,7 @@ namespace PN.WebAPI.Controllers
             return Ok("success");
          return NotFound("There is some error");
       }
+
+
    }
 }

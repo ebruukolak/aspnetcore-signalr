@@ -21,7 +21,14 @@ namespace PN.Client
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+         services.AddSession(options =>
+         {
+            // 10 dakikalı Redis Timeout Süresi.
+            options.IdleTimeout = TimeSpan.FromDays(1);
+            options.CookieHttpOnly = true;
+         });
+         services.AddMvc();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,11 +39,7 @@ namespace PN.Client
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
             }
-            //else
-            //{
-            //    app.UseExceptionHandler("/Home/Error");
-            //}
-
+         app.UseSession();
             app.UseStaticFiles();
 
             app.UseMvc(routes =>

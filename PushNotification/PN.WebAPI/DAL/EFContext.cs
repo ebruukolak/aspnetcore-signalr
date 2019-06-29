@@ -13,5 +13,6 @@ namespace PN.WebAPI.DAL
                                => optionsBuilder.UseNpgsql(@"Host=localhost;Port=5432;Username=postgres;Password=123456;Database=Pcis;Pooling=true;");
 
       public DbSet<User> users { get; set; }
+      public DbSet<ActiveUser> activeUsers { get; set; }
    }
 }

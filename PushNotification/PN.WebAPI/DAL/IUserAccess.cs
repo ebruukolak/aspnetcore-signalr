@@ -11,5 +11,6 @@ namespace PN.WebAPI.DAL
       User GetUser(string username, string password);
       List<User> GetAllUsers();
       void UpdateUser(User user);
+      User GetUserByID(int id);
    }
 }

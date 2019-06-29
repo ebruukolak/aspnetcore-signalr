@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PN.WebAPI.DAL;
-using PN.WebAPI.Hubs;
 using PN.WebAPI.Manager;
 
 namespace PN.WebAPI
@@ -27,9 +26,11 @@ namespace PN.WebAPI
       public void ConfigureServices(IServiceCollection services)
       {
          services.AddEntityFrameworkNpgsql().AddDbContext<EFContext>().BuildServiceProvider();
-         services.AddScoped<IUserManager, UserManager>();
+         services.AddTransient<IUserManager, UserManager>();
          services.AddScoped<IUserAccess, UserAccess>();
-        // services.AddScoped<IMessageHub, MessageHub>();
+         services.AddScoped<IActiveUserAccess, ActiveUserAccess>();
+
+         // services.AddScoped<IMessageHub, MessageHub>();
          services.AddSignalR();
             services.AddMvc();
       }

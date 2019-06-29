@@ -10,11 +10,13 @@ namespace PN.WebAPI.Manager
    public class UserManager : IUserManager
    {
       private IUserAccess _userAccess;
+      private IActiveUserAccess _activeUserAccess;
       private const int staticExpireTime = 1;
 
-      public UserManager(IUserAccess userAccess)
+      public UserManager(IUserAccess userAccess, IActiveUserAccess activeUserAccess)
       {
          _userAccess = userAccess;
+         _activeUserAccess = activeUserAccess;
       }
 
       public User Authenticate(string username, string password)
@@ -26,9 +28,9 @@ namespace PN.WebAPI.Manager
             return null;
          else
          {
-            user.lastlogindate = DateTime.Now;
-            _userAccess.UpdateUser(user);
-            user.password = null;           
+            //user.lastlogindate = DateTime.Now;
+            //_userAccess.UpdateUser(user);
+            user.password = null;
          }
          return user;
       }
@@ -38,19 +40,51 @@ namespace PN.WebAPI.Manager
          return _userAccess.GetUser(username, password);
       }
 
-
       public List<User> GetLogonUsers()
       {
-         var users = _userAccess.GetAllUsers();
+         var activeUsers = _activeUserAccess.GetAllActiveUsers();
          int userExpire = default(int);
          List<User> logonUsers = new List<User>();
-         foreach (var item in users)
+         foreach (var item in activeUsers)
          {
-            userExpire = (item.lastlogindate - DateTime.Now.Date).Days;
-            if (staticExpireTime > userExpire)
-               logonUsers.Add(item);
+            if (item.lastlogindate.Date != DateTime.Now.Date)
+            {
+               userExpire = (DateTime.Now.Date - item.lastlogindate.Date).Days;
+               if (userExpire > staticExpireTime)
+               {
+                  var user = _userAccess.GetUserByID(item.userid);
+                  logonUsers.Add(user);
+               }
+               else
+               {
+                  _activeUserAccess.DeleteActiveUsers(item.id);
+               }
+
+            }
+            else
+            {
+               var user = _userAccess.GetUserByID(item.userid);
+               logonUsers.Add(user);
+            }
          }
          return logonUsers;
+      }
+
+      public void AddActiveUser(ActiveUser activeUser)
+      {
+         _activeUserAccess.AddActiveUsers(activeUser);
+      }
+
+      public void UpdateActiveUser(ActiveUser activeUser)
+      {
+         _activeUserAccess.UpdateActiveUsers(activeUser);
+      }
+
+      public ActiveUser GetActiveUser(string sessionid)
+      {
+         if (!string.IsNullOrEmpty(sessionid))
+            return _activeUserAccess.GetActiveUser(sessionid);
+         return null;
       }
    }
 }

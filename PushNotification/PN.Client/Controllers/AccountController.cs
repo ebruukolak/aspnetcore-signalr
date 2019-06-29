@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PN.Client.Models;
@@ -30,8 +31,17 @@ namespace PN.Client.Controllers
 
             var result = await client.PostAsync("http://localhost:2321/api/account/Logon", content);
             if (result.IsSuccessStatusCode)
-               return RedirectToAction("Index");
-            return View();
+            {
+               var user = JsonConvert.DeserializeObject<User>(result.Content.ReadAsStringAsync().Result);
+              return await ModifiedActiveUser(new ActiveUserViewModel
+               {
+                  userid = user.id,
+                  sessionid = HttpContext.Session.Id
+               });
+            }
+            else
+               return View();
+
          }
       }
       public IActionResult Index()
@@ -53,17 +63,17 @@ namespace PN.Client.Controllers
                {
                   ViewBag.Message = "Tehere is no logon users";
                   return View(null);
-               }     
+               }
             }
             ViewBag.Message = "Tehere is no logon users";
-            return View(null);          
+            return View(null);
          }
       }
       public async Task<IActionResult> SendMessage()
       {
          using (HttpClient client = new HttpClient())
          {
-            var userData = await client.PostAsync("http://localhost:2321/api/account/SendMessage",null);
+            var userData = await client.PostAsync("http://localhost:2321/api/account/SendMessage", null);
 
             if (userData.IsSuccessStatusCode)
             {
@@ -73,5 +83,22 @@ namespace PN.Client.Controllers
          }
       }
 
+      public async Task<IActionResult> ModifiedActiveUser(ActiveUserViewModel activeUserViewModel)
+      {
+         using (HttpClient client = new HttpClient())
+         {
+            var au = JsonConvert.SerializeObject(new ActiveUserViewModel { userid = activeUserViewModel.userid, sessionid = activeUserViewModel.sessionid });
+            HttpContent content = new StringContent(au, null, "application/json");
+
+            var result = await client.PostAsync("http://localhost:2321/api/account/ModifiedActiveUser", content);
+            if (result.IsSuccessStatusCode)
+            {
+               return RedirectToAction("Index");
+
+            }
+
+            return View();
+         }
+      }
    }
 }

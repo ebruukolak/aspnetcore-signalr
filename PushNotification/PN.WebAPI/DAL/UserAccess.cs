@@ -31,5 +31,13 @@ namespace PN.WebAPI.DAL
             context.SaveChanges();
          }
       }
+
+      public User GetUserByID(int id)
+      {
+         using (var context = new EFContext())
+         {
+            return context.Set<User>().FirstOrDefault(x => x.id == id);
+         }
+      }
    }
 }
