@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PN.WebAPI.Entities;
+using PN.WebAPI.Hubs;
 using PN.WebAPI.Manager;
 
 namespace PN.WebAPI.Controllers
@@ -12,9 +13,11 @@ namespace PN.WebAPI.Controllers
     public class AccountController : Controller
     {
       IUserManager _userManager;
-      public AccountController(IUserManager userManager)
+      IMessageHub _messageHub;
+      public AccountController(IUserManager userManager,IMessageHub messageHub)
       {
          _userManager = userManager;
+         _messageHub = messageHub;
       }
 
       [HttpPost("Logon")]
@@ -34,6 +37,15 @@ namespace PN.WebAPI.Controllers
             return NotFound("There is no logon user.");
          else
             return Ok(users);
+      }
+
+      [HttpPost("SendMessage")]
+      public IActionResult SendMessage()
+      {
+        var result= _messageHub.SendMessage("aaaaa");
+         if (result.IsCompletedSuccessfully)
+            return Ok("success");
+         return NotFound("There is some error");
       }
    }
 }
