@@ -29,9 +29,9 @@ namespace PN.WebAPI
          services.AddEntityFrameworkNpgsql().AddDbContext<EFContext>().BuildServiceProvider();
          services.AddScoped<IUserManager, UserManager>();
          services.AddScoped<IUserAccess, UserAccess>();
-         services.AddScoped<IMessageHub, MessageHub>();
+        // services.AddScoped<IMessageHub, MessageHub>();
          services.AddSignalR();
-         services.AddMvc();
+            services.AddMvc();
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,7 +41,7 @@ namespace PN.WebAPI
          {
             app.UseDeveloperExceptionPage();
          }
-         app.UseSignalR(routes => { routes.MapHub<MessageHub>("message"); });
+         app.UseSignalR(routes => { routes.MapHub<MessageHub>("/messageHub"); });
          app.UseMvc();
       }
    }

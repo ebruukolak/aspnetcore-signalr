@@ -59,6 +59,19 @@ namespace PN.Client.Controllers
             return View(null);          
          }
       }
-     
+      public async Task<IActionResult> SendMessage()
+      {
+         using (HttpClient client = new HttpClient())
+         {
+            var userData = await client.PostAsync("http://localhost:2321/api/account/SendMessage",null);
+
+            if (userData.IsSuccessStatusCode)
+            {
+               return View("Index");
+            }
+            return null;
+         }
+      }
+
    }
 }

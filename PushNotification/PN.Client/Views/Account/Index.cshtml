@@ -8,8 +8,9 @@
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
             <div class="body">
+                <strong>Uyarı!</strong><span id="messageSpan"></span>
                 <a href="#" class="logonusers btn btn-success universalWidth">Logon Users</a>
-                <a href="#" class="sendMessage btn btn-success universalWidth">Send Message</a>
+                <a href="#" id="sendButton" class="sendMessage btn btn-success universalWidth">Send Message</a>
             </div>
         </div>
     </div>
@@ -19,6 +20,11 @@
     <script type="text/javascript">
         $('.logonusers').click(function () {
             var url = "/Account/LogonUsers";
+            window.location.href = url;
+        })
+
+        $('.sendMessage').click(function () {
+            var url = "/Account/sendMessage";
             window.location.href = url;
         })
     </script>
