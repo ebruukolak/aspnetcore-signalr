@@ -21,30 +21,44 @@ namespace PN.Client.Controllers
       }
 
       [HttpPost]
-      public async Task<IActionResult> Logon(User user)
+      public async Task<IActionResult> Logon(LogonViewModel logonViewModel)
       {
          using (HttpClient client = new HttpClient())
          {
-            var userData = JsonConvert.SerializeObject(user);
+            var userData = JsonConvert.SerializeObject(new User { username = logonViewModel.username, password = logonViewModel.password });
             HttpContent content = new StringContent(userData, null, "application/json");
 
-            await client.PostAsync("http://localhost:2321/api/account/Logon", content);
-
-            return RedirectToAction("Index");
-         }
-      }    
-      public async Task<IActionResult> LogonUsers()
-      {
-         using (HttpClient client = new HttpClient())
-         {
-           var userData= await client.PostAsync("http://localhost:2321/api/account/GetLogonUsers",null);
-            var users = JsonConvert.DeserializeObject<IEnumerable<User>>(userData.Content.ReadAsStringAsync().Result);
-            return View(users);
+            var result = await client.PostAsync("http://localhost:2321/api/account/Logon", content);
+            if (result.IsSuccessStatusCode)
+               return RedirectToAction("Index");
+            return View();
          }
       }
       public IActionResult Index()
       {
          return View();
       }
+      public async Task<IActionResult> LogonUsers()
+      {
+         using (HttpClient client = new HttpClient())
+         {
+            var userData = await client.PostAsync("http://localhost:2321/api/account/GetLogonUsers", null);
+
+            if (userData.IsSuccessStatusCode)
+            {
+               var users = JsonConvert.DeserializeObject<IEnumerable<User>>(userData.Content.ReadAsStringAsync().Result);
+               if (users.Count() > 0)
+                  return View(users);
+               else
+               {
+                  ViewBag.Message = "Tehere is no logon users";
+                  return View(null);
+               }     
+            }
+            ViewBag.Message = "Tehere is no logon users";
+            return View(null);          
+         }
+      }
+     
    }
 }

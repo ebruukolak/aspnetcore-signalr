@@ -18,7 +18,6 @@
                 {
                     @Html.AntiForgeryToken()
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                    <b style="color:#a94442;" class="align-center">@TempData["invalidLogin"]</b>
                     <div class="input-group">
                         <span class="input-group-addon">
                             <i class="material-icons">@Html.LabelFor(x => x.username)</i>
