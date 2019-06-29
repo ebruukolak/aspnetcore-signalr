@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
 using PN.WebAPI.Entities;
+using PN.WebAPI.Helpers;
 using PN.WebAPI.Manager;
 
 namespace PN.WebAPI.Controllers
@@ -15,19 +18,32 @@ namespace PN.WebAPI.Controllers
    {
       IUserManager _userManager;
       IHubContext<MessageHub> _messageHub;
-      public AccountController(IUserManager userManager, IHubContext<MessageHub> messageHub)
+      private readonly AppSettings _appSettings;
+
+      public AccountController(IUserManager userManager, IHubContext<MessageHub> messageHub, IOptions<AppSettings> appSettings)
       {
          _userManager = userManager;
          _messageHub = messageHub;
+         _appSettings = appSettings.Value;
       }
 
       [HttpPost("Logon")]
-      public User Logon([FromBody] User u)
+      public IActionResult Logon([FromBody] User u)
       {
          var user = _userManager.Authenticate(u.username, u.password);
-         return user;
+         if (user == null)
+            return NotFound("Username or password is incorrect");
+         var token = TokenHelper.GenerateToken(user, _appSettings.Secret);
+
+         ModifiedActiveUser(new ActiveUser
+         {
+            token = token,
+            userid = user.id
+         });
+         return Ok(new { Token = token,user });
       }
 
+      [Authorize]
       [HttpPost("GetLogonUsers")]
       public IActionResult GetLogonUsers()
       {
@@ -38,68 +54,33 @@ namespace PN.WebAPI.Controllers
             return Ok(users);
       }
 
-      [HttpPost("AddActiveUser")]
-      public IActionResult AddActiveUser([FromBody] ActiveUser activeUser)
-      {
-         if (ModelState.IsValid)
-         {
-            _userManager.AddActiveUser(activeUser);
-            return Ok(HttpStatusCode.Created);
-         }
-         else
-            return Ok(HttpStatusCode.BadRequest);
-      }
-
-      [HttpPost("UpdateActiveUser")]
-      public IActionResult UpdateActiveUser([FromBody] ActiveUser activeUser)
-      {
-         if (ModelState.IsValid)
-         {
-            _userManager.UpdateActiveUser(activeUser);
-            return Ok(HttpStatusCode.Created);
-         }
-         else
-            return Ok(HttpStatusCode.BadRequest);
-      }
-
-     // [HttpGet("GetBySessionId")]
-      //public ActiveUser GetBySessionId(string sessionid)
-      //{
-      //   var activeUser = _userManager.GetBySessionId(sessionid);
-      //   if (activeUser == null)
-      //      return null;
-      //   else
-      //      return activeUser;
-      //}
-
-      [HttpPost("ModifiedActiveUser")]
-      public IActionResult ModifiedActiveUser([FromBody] ActiveUser activeUser)
-      {
-         if (activeUser != null)
-         {
-            activeUser.lastlogindate = DateTime.Now;
-           if(_userManager.GetActiveUser(activeUser.sessionid) != null)
-            {
-               _userManager.UpdateActiveUser(activeUser);
-               return Ok(HttpStatusCode.Accepted);
-            }
-            else
-            {
-               _userManager.AddActiveUser(activeUser);
-               return Ok(HttpStatusCode.Created);
-            }
-         }
-         return Ok(HttpStatusCode.NotFound);
-      }
-
+       [Authorize]
       [HttpPost("SendMessage")]
       public IActionResult SendMessage()
       {
          var result = _messageHub.Clients.All.SendAsync("SendMessage", "Merhaba ben burdayım");
          if (result.IsCompletedSuccessfully)
-            return Ok("success");
+            return Ok("Success");
          return NotFound("There is some error");
       }
+
+      public void ModifiedActiveUser(ActiveUser activeUser)
+      {
+         if (activeUser != null)
+         {
+            activeUser.lastlogindate = DateTime.Now;
+            if (_userManager.GetActiveUser(activeUser.userid) != null)
+            {
+               _userManager.UpdateActiveUser(activeUser);
+            }
+            else
+            {
+               _userManager.AddActiveUser(activeUser);
+            }
+         }
+       }
+
+     
 
 
    }

@@ -12,6 +12,7 @@ namespace PN.WebAPI.Manager
       List<User> GetLogonUsers();
       void AddActiveUser(ActiveUser activeUser);
       void UpdateActiveUser(ActiveUser activeUser);
-      ActiveUser GetActiveUser(string sessionid);
+      ActiveUser GetActiveUser(int userid);
+      User GetUserById(int id);
    }
 }

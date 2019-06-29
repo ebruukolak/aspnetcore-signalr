@@ -49,11 +49,11 @@ namespace PN.WebAPI.DAL
          }
       }
 
-      public ActiveUser GetActiveUser(string sessionId)
+      public ActiveUser GetActiveUser(int userid)
       {
          using (var context = new EFContext())
          {
-            return context.Set<ActiveUser>().FirstOrDefault(x => x.sessionid == sessionId );
+            return context.Set<ActiveUser>().FirstOrDefault(x => x.userid ==userid  );
          }
       }
    }

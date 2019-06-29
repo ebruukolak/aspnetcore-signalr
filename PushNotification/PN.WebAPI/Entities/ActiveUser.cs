@@ -10,7 +10,7 @@ namespace PN.WebAPI.Entities
    {
       [Key]
       public int id { get; set; }
-      public string sessionid { get; set; }
+      public string token { get; set; }
       public int userid { get; set; }
       public DateTime lastlogindate { get; set; }
          

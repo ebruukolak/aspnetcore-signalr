@@ -32,12 +32,13 @@ namespace PN.Client.Controllers
             var result = await client.PostAsync("http://localhost:2321/api/account/Logon", content);
             if (result.IsSuccessStatusCode)
             {
-               var user = JsonConvert.DeserializeObject<User>(result.Content.ReadAsStringAsync().Result);
-              return await ModifiedActiveUser(new ActiveUserViewModel
-               {
-                  userid = user.id,
-                  sessionid = HttpContext.Session.Id
-               });
+               // var user = JsonConvert.DeserializeObject<User>(result.Content.ReadAsStringAsync().Result);
+               //return await ModifiedActiveUser(new ActiveUserViewModel
+               // {
+               //    userid = user.id,
+               //    sessionid = HttpContext.Session.Id
+               // });
+               return View("Index");
             }
             else
                return View();
@@ -73,32 +74,33 @@ namespace PN.Client.Controllers
       {
          using (HttpClient client = new HttpClient())
          {
-            var userData = await client.PostAsync("http://localhost:2321/api/account/SendMessage", null);
+            var result = await client.PostAsync("http://localhost:2321/api/account/SendMessage", null);
 
-            if (userData.IsSuccessStatusCode)
+            if (result.IsSuccessStatusCode)
             {
                return View("Index");
             }
-            return null;
+            ViewBag.Message = "Message could not send";
+            return View("Index");
          }
       }
 
-      public async Task<IActionResult> ModifiedActiveUser(ActiveUserViewModel activeUserViewModel)
-      {
-         using (HttpClient client = new HttpClient())
-         {
-            var au = JsonConvert.SerializeObject(new ActiveUserViewModel { userid = activeUserViewModel.userid, sessionid = activeUserViewModel.sessionid });
-            HttpContent content = new StringContent(au, null, "application/json");
+      //public async Task<IActionResult> ModifiedActiveUser(ActiveUserViewModel activeUserViewModel)
+      //{
+      //   using (HttpClient client = new HttpClient())
+      //   {
+      //      var au = JsonConvert.SerializeObject(new ActiveUserViewModel { userid = activeUserViewModel.userid, sessionid = activeUserViewModel.sessionid });
+      //      HttpContent content = new StringContent(au, null, "application/json");
 
-            var result = await client.PostAsync("http://localhost:2321/api/account/ModifiedActiveUser", content);
-            if (result.IsSuccessStatusCode)
-            {
-               return RedirectToAction("Index");
+      //      var result = await client.PostAsync("http://localhost:2321/api/account/ModifiedActiveUser", content);
+      //      if (result.IsSuccessStatusCode)
+      //      {
+      //         return RedirectToAction("Index");
 
-            }
+      //      }
 
-            return View();
-         }
-      }
+      //      return View();
+      //   }
+      //}
    }
 }

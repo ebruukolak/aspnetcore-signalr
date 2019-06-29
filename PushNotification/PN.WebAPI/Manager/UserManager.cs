@@ -28,8 +28,6 @@ namespace PN.WebAPI.Manager
             return null;
          else
          {
-            //user.lastlogindate = DateTime.Now;
-            //_userAccess.UpdateUser(user);
             user.password = null;
          }
          return user;
@@ -80,10 +78,17 @@ namespace PN.WebAPI.Manager
          _activeUserAccess.UpdateActiveUsers(activeUser);
       }
 
-      public ActiveUser GetActiveUser(string sessionid)
+      public ActiveUser GetActiveUser(int userid)
       {
-         if (!string.IsNullOrEmpty(sessionid))
-            return _activeUserAccess.GetActiveUser(sessionid);
+         if (userid>0)
+            return _activeUserAccess.GetActiveUser(userid);
+         return null;
+      }
+
+      public User GetUserById(int id)
+      {
+         if (id > 0)
+            return _userAccess.GetUserByID(id);
          return null;
       }
    }
