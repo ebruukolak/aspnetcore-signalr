@@ -27,5 +27,23 @@ namespace PN.Test
          var users = _userManager.GetLogonUsers();
          Assert.NotNull(users);
       }
+      [Fact]
+      public void should_update_activeuser()
+      {
+         _userManager.UpdateActiveUser(new ActiveUser { token = "51513213212312", lastlogindate = DateTime.Now });
+      }
+      [Fact]
+      public void should_get_activeuser()
+      {
+         var activeUser = _userManager.GetActiveUser(1);
+         Assert.NotNull(activeUser);
+      }
+
+      [Fact]
+      public void should_get_user_by_id()
+      {
+         var user = _userManager.GetUserById(1);
+         Assert.NotNull(user);
+      }
    }
 }

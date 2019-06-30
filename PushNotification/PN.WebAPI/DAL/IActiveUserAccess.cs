@@ -12,6 +12,6 @@ namespace PN.WebAPI.DAL
       void AddActiveUsers(ActiveUser activeUser);
       void UpdateActiveUsers(ActiveUser activeUser);
       void DeleteActiveUsers(int userid);
-      ActiveUser GetActiveUser(int id);
+      ActiveUser GetActiveUser(int userid);
    }
 }

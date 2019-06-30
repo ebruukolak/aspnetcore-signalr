@@ -36,5 +36,12 @@ namespace PN.Test
          };
          _userAccess.UpdateUser(user);
       }
+
+      [Fact]
+      public void should_get_user_by_id()
+      {
+         var user= _userAccess.GetUserByID(1);
+         Assert.NotNull(user);
+      }
    }
 }
