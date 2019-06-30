@@ -36,14 +36,16 @@ namespace PN.WebAPI
 
          var appSettingsSection = Configuration.GetSection("AppSettings");
          services.Configure<AppSettings>(appSettingsSection);
-       
+
          var appSettings = appSettingsSection.Get<AppSettings>();
          var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-         services.AddAuthentication(x => {
+         services.AddAuthentication(x =>
+         {
             x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
          })
-           .AddJwtBearer(x => {
+           .AddJwtBearer(x =>
+           {
               x.Events = new JwtBearerEvents
               {
                  OnTokenValidated = context =>
@@ -69,9 +71,17 @@ namespace PN.WebAPI
               };
            });
 
-         services.AddSignalR();
 
-            services.AddMvc();
+         services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+         {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader()
+                   .AllowCredentials()
+                   .WithOrigins("http://localhost:11796");
+         }));
+         services.AddSignalR();
+         services.AddMvc();
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,7 +91,8 @@ namespace PN.WebAPI
          {
             app.UseDeveloperExceptionPage();
          }
-         app.UseAuthentication();  
+         app.UseAuthentication();
+         app.UseCors("CorsPolicy");
          app.UseSignalR(routes => { routes.MapHub<MessageHub>("/messageHub"); });
          app.UseMvc();
       }
