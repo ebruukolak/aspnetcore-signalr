@@ -6,13 +6,8 @@ using System.Threading.Tasks;
 
 namespace PN.WebAPI
 {
-    public class MessageHub:Hub
+   public class MessageHub:Hub
     {
-      //public override Task OnConnectedAsync()
-      //{
-      //   return Clients.Client(Context.ConnectionId).SendAsync("SetConnectionId", Context.ConnectionId);
-      //}
-
      
     }
 }
