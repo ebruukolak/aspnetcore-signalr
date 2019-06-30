@@ -51,6 +51,7 @@ namespace PN.WebAPI.Manager
                if (userExpire > staticExpireTime)
                {
                   var user = _userAccess.GetUserByID(item.userid);
+                  user.lastlogindate = item.lastlogindate;
                   logonUsers.Add(user);
                }
                else
@@ -62,6 +63,7 @@ namespace PN.WebAPI.Manager
             else
             {
                var user = _userAccess.GetUserByID(item.userid);
+               user.lastlogindate = item.lastlogindate;
                logonUsers.Add(user);
             }
          }
@@ -80,7 +82,7 @@ namespace PN.WebAPI.Manager
 
       public ActiveUser GetActiveUser(int userid)
       {
-         if (userid>0)
+         if (userid > 0)
             return _activeUserAccess.GetActiveUser(userid);
          return null;
       }

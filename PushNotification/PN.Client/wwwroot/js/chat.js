@@ -12,8 +12,8 @@ connection.start().catch(function (err) {
     return console.error(err.toString());
 });
 
-var el = document.getElementById('overlayBtn');
-if (el) {
+var btn = document.getElementById('sendButton');
+if (btn) {
     el.addEventListener('click', swapper, false); addEventListener("click", function (event) {
         connection.invoke("SendMessage", message).catch(function (err) {
             return console.error(err.toString());
@@ -22,12 +22,3 @@ if (el) {
     });
 }
 
-
-//var btn = document.getElementById('sendButton');
-
-//document.getElementById('sendButton').addEventListener("click", function (event) {
-//    connection.invoke("SendMessage", message).catch(function (err) {
-//        return console.error(err.toString());
-//    });
-//    event.preventDefault();
-//});

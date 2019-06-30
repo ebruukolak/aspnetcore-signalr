@@ -35,14 +35,6 @@ namespace PN.Client.Controllers
                var logon = JsonConvert.DeserializeObject<LogonViewModel>(result.Content.ReadAsStringAsync().Result);
 
                HttpContext.Session.SetString("token", logon.token);
-
-               // var user = JsonConvert.DeserializeObject<User>(result.Content.ReadAsStringAsync().Result);
-               //return await ModifiedActiveUser(new ActiveUserViewModel
-               // {
-               //    userid = user.id,
-               //    sessionid = HttpContext.Session.Id
-               // });
-
                return View("Index");
             }
             else
@@ -58,7 +50,7 @@ namespace PN.Client.Controllers
       {
          using (HttpClient client = new HttpClient())
          {
-           client.DefaultRequestHeaders.Authorization =new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer" , HttpContext.Session.GetString("token"));
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
             var userData = await client.PostAsync("http://localhost:2321/api/account/GetLogonUsers", null);
 
             if (userData.IsSuccessStatusCode)
@@ -91,23 +83,5 @@ namespace PN.Client.Controllers
             return View("Index");
          }
       }
-
-      //public async Task<IActionResult> ModifiedActiveUser(ActiveUserViewModel activeUserViewModel)
-      //{
-      //   using (HttpClient client = new HttpClient())
-      //   {
-      //      var au = JsonConvert.SerializeObject(new ActiveUserViewModel { userid = activeUserViewModel.userid, sessionid = activeUserViewModel.sessionid });
-      //      HttpContent content = new StringContent(au, null, "application/json");
-
-      //      var result = await client.PostAsync("http://localhost:2321/api/account/ModifiedActiveUser", content);
-      //      if (result.IsSuccessStatusCode)
-      //      {
-      //         return RedirectToAction("Index");
-
-      //      }
-
-      //      return View();
-      //   }
-      //}
    }
 }
