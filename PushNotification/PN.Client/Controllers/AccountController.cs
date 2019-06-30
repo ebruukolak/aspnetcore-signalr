@@ -32,12 +32,17 @@ namespace PN.Client.Controllers
             var result = await client.PostAsync("http://localhost:2321/api/account/Logon", content);
             if (result.IsSuccessStatusCode)
             {
+               var logon = JsonConvert.DeserializeObject<LogonViewModel>(result.Content.ReadAsStringAsync().Result);
+
+               HttpContext.Session.SetString("token", logon.token);
+
                // var user = JsonConvert.DeserializeObject<User>(result.Content.ReadAsStringAsync().Result);
                //return await ModifiedActiveUser(new ActiveUserViewModel
                // {
                //    userid = user.id,
                //    sessionid = HttpContext.Session.Id
                // });
+
                return View("Index");
             }
             else
@@ -53,6 +58,7 @@ namespace PN.Client.Controllers
       {
          using (HttpClient client = new HttpClient())
          {
+           client.DefaultRequestHeaders.Authorization =new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer" , HttpContext.Session.GetString("token"));
             var userData = await client.PostAsync("http://localhost:2321/api/account/GetLogonUsers", null);
 
             if (userData.IsSuccessStatusCode)
@@ -74,6 +80,7 @@ namespace PN.Client.Controllers
       {
          using (HttpClient client = new HttpClient())
          {
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
             var result = await client.PostAsync("http://localhost:2321/api/account/SendMessage", null);
 
             if (result.IsSuccessStatusCode)

@@ -1,9 +1,6 @@
 ﻿"use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:2321/messageHub").build();
-
-//Disable send button until connection is established
-document.getElementById("sendButton").disabled = true;
+var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
 
 connection.on("SendMessage", function (message) {
     $('#messageSpan').text(message);

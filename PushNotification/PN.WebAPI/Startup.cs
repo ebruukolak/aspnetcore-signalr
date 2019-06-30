@@ -81,6 +81,7 @@ namespace PN.WebAPI
          {
             app.UseDeveloperExceptionPage();
          }
+         app.UseAuthentication();  
          app.UseSignalR(routes => { routes.MapHub<MessageHub>("/messageHub"); });
          app.UseMvc();
       }

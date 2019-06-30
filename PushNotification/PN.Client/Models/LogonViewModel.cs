@@ -16,6 +16,7 @@ namespace PN.Client.Models
       [Required(ErrorMessage = "Please,enter password")]     
       [Display(Name = "Password")]
       public string password { get; set; }
+      public string token { get; set; }
 
    }
 }

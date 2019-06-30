@@ -40,7 +40,7 @@ namespace PN.WebAPI.Controllers
             token = token,
             userid = user.id
          });
-         return Ok(new { Token = token,user });
+         return Ok(new { Token = token, username=user.username,id=user.id });
       }
 
       [Authorize]
@@ -54,7 +54,7 @@ namespace PN.WebAPI.Controllers
             return Ok(users);
       }
 
-       [Authorize]
+      [Authorize]
       [HttpPost("SendMessage")]
       public IActionResult SendMessage()
       {
@@ -66,11 +66,14 @@ namespace PN.WebAPI.Controllers
 
       public void ModifiedActiveUser(ActiveUser activeUser)
       {
-         if (activeUser != null)
+         var au = new ActiveUser();
+         if (activeUser != null && activeUser.userid > 0)
          {
+            au = _userManager.GetActiveUser(activeUser.userid);
             activeUser.lastlogindate = DateTime.Now;
-            if (_userManager.GetActiveUser(activeUser.userid) != null)
+            if (au != null)
             {
+               activeUser.id = au.id;
                _userManager.UpdateActiveUser(activeUser);
             }
             else
@@ -78,9 +81,9 @@ namespace PN.WebAPI.Controllers
                _userManager.AddActiveUser(activeUser);
             }
          }
-       }
+      }
 
-     
+
 
 
    }
